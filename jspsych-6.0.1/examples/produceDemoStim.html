@@ -1,0 +1,46 @@
+<! doctype html>
+<html>
+  <head>
+  <title> Luminance Threshold</title>
+  <script src = "../jspsych.js"></script>
+  <script src = "../plugins/jspsych-LTH_alternate.js"></script> <!--Include the script for the plugin-->
+  <script src = "../plugins/jspsych-html-keyboard-response.js"></script>
+  <script src = "../plugins/jspsych-fullscreen.js"></script>
+  <script src = "../plugins/jspsych-fixation.js"></script>
+  <script src = "../plugins/jspsych-mp-mask-staircase-play.js"></script>
+  <script src = "../pest.js"></script>
+  <link href = "../css/jspsych.css" rel = "stylesheet"></link>
+  </head>
+  <body>
+  </body>
+  <script>
+
+var lthVal2=100;
+var noiseLevel2=0;
+
+  var test_block={
+    type:'mp-mask-staircase-play',
+    aperture_width: 600,
+    aperture_height: 600,
+    choices: jsPsych.ALL_KEYS,
+    dot_radius: 150,
+    staircase_type:1,
+    lth_val: lthVal2,
+    magno_noise: noiseLevel2,
+    parvo_noise: noiseLevel2,
+    trial_type:1,
+    trial_duration: 5000,
+  }
+
+
+  main_timeline=[]
+  main_timeline.push(test_block)
+
+  jsPsych.init({
+    timeline: main_timeline,
+    show_progress_bar: false,
+    on_finish: function(){jsPsych.data.displayData();}
+
+  })
+  </script>
+  </html>

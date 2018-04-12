@@ -1,0 +1,37 @@
+<! doctype html>
+<html>
+  <head>
+  <title> Isoluminance pretest </title>
+  <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src = "../jspsych.js"></script>
+  <script src = "../plugins/jspsych-bs.js"></script> <!--Include the script for the plugin-->
+  <script src = "../plugins/jspsych-text.js"></script>
+  <link href = "../css/jspsych.css" rel = "stylesheet" type = "text/css"></link>
+  </head>
+  <body>
+  </body>
+  <script>
+
+    var instructions_block = {
+      type: "text",
+      text: "<p> Oh Shit Fuck.</p>"
+    }
+
+    var IsoL_trial = [{}]
+
+    var test_block = {
+      type: "bs",
+          }
+    var main_timeline = [];
+    main_timeline.push(instructions_block);
+    main_timeline.push(test_block);
+
+    jsPsych.init({
+      timeline: main_timeline,
+      on_finish: function(){
+
+      }
+
+    })
+    </script>
+    </html>

@@ -1,0 +1,242 @@
+<! doctype html>
+<html>
+  <head>
+  <title> Main Wrapper</title>
+  <script src = "../jspsych.js"></script>
+  <script src = "../plugins/jspsych-LTH_alternate.js"></script> <!--Include the script for the plugin-->
+  <script src = "../plugins/jspsych-iso.js"></script>
+  <script src = "../plugins/jspsych-html-keyboard-response.js"></script>
+  <script src = "../plugins/jspsych-fullscreen.js"></script>
+  <script src = "../plugins/jspsych-fixation.js"></script>
+  <script src = "../plugins/jspsych-mp-mask.js"></script>
+  <link href = "../css/jspsych.css" rel = "stylesheet"></link>
+  </head>
+  <body>
+  </body>
+  <script>
+
+    var lth_instructions_block = {
+      type: "html-keyboard-response",
+      stimulus: "<p>In this part of the experiment you will keep your eyes on fixation cross at the center of the screen.  Circles of varying brightness will appear to the left or right or at the top or bottom of the fixation cross.  Please indicate which direction a circle appeared with the appropriate arrow key (left, right, up, or down). Press enter to continue. </p>"
+    }
+    var fixation_block={
+      type:'fixation',
+      fixation_cross_color:"red",
+      trial_duration:1000,
+    }
+    var consecutive_correct=0;
+    var consecutive_incorrect=0;
+    var bgval = 127;
+    var lthval = bgval*.9; //starting luminance value
+    var Step=bgval*.04; //starting Step size
+
+
+    var lth_test_block = {
+      type: 'LTH',
+      choices: [37,38,39,40],
+    //  aperture_height:[],
+      //aperture_width:[],
+
+      dot_radius: 100,
+      trial_type: jsPsych.timelineVariable('trial_type'),
+      consecutive_correct: consecutive_correct,
+      consecutive_incorrect: consecutive_incorrect,
+      lthval: lthval,
+      Step:Step,
+      on_finish:function(){
+
+        if (jsPsych.data.getLastTrialData().select('correct').values==1){
+          if(consecutive_correct==0 && jsPsych.data.get().filter({trial_type:'LTH'}).count()>1){
+            jsPsych.data.get().addToLast({turnaround: true})
+          };
+          consecutive_incorrect=0;
+          consecutive_correct++;
+          if (consecutive_correct>2){
+            Step=Step*.45;
+          }else{Step=Step*.8}
+          if (lthval<bgval){
+            lthval=bgval-Step;
+          }else if (lthval>bgval){
+            lthval=bgval*.96;
+          } else {
+            Step=Step*1.1;
+            lthval=bgval-Step;
+          }
+
+        }else if (jsPsych.data.getLastTrialData().select('correct').values==0){
+          consecutive_correct=0;
+          consecutive_incorrect++;
+          if(consecutive_incorrect>2){
+            Step=Step*1.3;
+          }else{Step=Step*1.1}
+          if (lthval<bgval){
+            lthval=bgval-Step;
+          }else if (lthval>bgval){
+            lthval=bgval*.9
+          }else{lthval=bgval-Step}
+        }
+
+
+      }//on_finish
+    }//test block
+
+
+    function repeat_array(reps,array){
+    var arr= []
+    for (var i=0; i < reps ;i++){
+      arr.push(array);
+    }
+    return arr
+  }
+
+
+
+    var lth_test_procedure={
+      timeline: [lth_test_block],
+      timeline_variables:[
+        {trial_type: '1'},
+        {trial_type: '2'},
+        {trial_type: '3'},
+        {trial_type: '4'},
+      ],
+      randomize_order: true,
+  repetitions: 8,
+    }
+    var lth_timeline = [];
+    lth_timeline.push({
+      type: 'fullscreen',
+      fullscreen_mode: true
+    });
+
+
+    var debrief_block = {
+      type:"html-keyboard-response",
+      stimulus:function(){
+        var turnaroundTrials=jsPsych.data.get().filter({turnaround: true});
+        var thresholdBelow=turnaroundTrials.select('lthVal').mean();
+        jsPsych.data.get().addToLast({thresholdBelow:thresholdBelow})
+        return "<p>Threshold Below "+thresholdBelow+"</p>"
+
+
+
+      }
+    }
+
+    var iso_instructions_block = {
+      type: "html-keyboard-response",
+      stimulus: "<p>You will see a disc rapidly alternating between red and green. Adjust the red/green balance with the left and right arrows.  When the disc appears to have the LEAST amount of flicker possible, press space to move on to the next trial.  Please try to get the image to the point with the absolute least amount of flicker. </p>"
+    }
+
+
+    var iso_test_block = {
+      type: "ISO",
+      choices: jsPsych.ALL_KEYS,
+      aperture_height:400,
+      aperture_width:400,
+      dot_radius: 100
+          }
+    var iso_test_procedure={
+            timeline: [iso_test_block],
+        //  timeline: [test_block,test_block,test_block,test_block],
+        repetitions: 20
+          }
+    var iso_debrief_block = {
+            type:"html-keyboard-response",
+            stimulus:function(){
+
+            //  var trials=jsPsych.data.get().filter({trial_type:'ISO'})
+            //  var rvArray=trials.select('redVal')
+            //  var std=Math.sqrt(jsPsych.data.get().select('redVal').variance())
+              var std=jsPsych.data.get().select('redVal').sd();
+              var mean=jsPsych.data.get().select('redVal').mean();
+              var median=jsPsych.data.get().select('redVal').median();
+              jsPsych.data.get().addToLast({redValstd:std})
+              jsPsych.data.get().addToLast({redValmean:mean})
+              jsPsych.data.get().addToLast({redValmedian:median})
+              return "<p> Avg Red Value: "+mean+" Median Red Value: " + median+" STD:"+std+"</p>"
+            }
+          }
+
+
+    var firstQ="During which interval did you feel more confident in your ability to see the image's orientation?"
+    var secondQ="Which direction was the first image tilting?"
+    var thirdQ="Which direction was the second image tilting?"
+      var main_instructions_block = {
+        type: "html-keyboard-response",
+        stimulus: "<p>In this part of the experiment you will view 2 consecutive grating patterns which will be tilted either to the right or left. After you will be asked which grating's orientation you more confidently saw as well as the orientation of each grating. Press enter to continue. . </p>"
+      }
+
+//jsPsych.data.get().select('lthVal').mean()
+      var turnaroundTrials=jsPsych.data.get().filter({turnaround: true});
+      var thresholdBelow=turnaroundTrials.select('lthVal').mean();
+      var main_test_block = {
+        type: "mp-mask",
+        aperture_width: 600,
+        aperture_height: 600,
+        choices: jsPsych.ALL_KEYS,
+        dot_radius: 150,
+        lth_val: function(){
+          var turnaroundTrials=jsPsych.data.get().filter({turnaround: true});
+          var thresholdBelow=turnaroundTrials.select('lthVal').mean();
+          return thresholdBelow
+        },
+        red_val: function(){
+          var redVal=jsPsych.data.get().select('redVal').mean();
+          return redVal
+        },
+        green_val: function(){
+          var greenVal=jsPsych.data.get().select('greenVal').mean();
+          return greenVal
+        },
+
+        trial_type:jsPsych.timelineVariable('trial_type'),
+  }
+      var response1={
+        type:"html-keyboard-response",
+        stimulus: [firstQ],
+        choices: [49,50],
+        prompt:"1-First Interval 2-Second Interval",
+        response_ends_trial: true,
+      }
+     var response2={
+       type:"html-keyboard-response",
+       stimulus: [secondQ],
+       choices: [37,39],
+       prompt:"Left Arrow Key-Left Right Arrow Key-Right",
+       response_ends_trial: true,
+     }
+     var response3={
+       type:"html-keyboard-response",
+       stimulus: [thirdQ],
+       choices: [37,39],
+       prompt:"Left Arrow Key-Left Right Arrow Key-Right",
+       response_ends_trial: true,
+     }
+     var main_test_procedure={
+       timeline: [main_test_block,response1,response2,response3],
+       timeline_variables:[{trial_type:'1'},{trial_type:'2'}],
+       randomize_order: true,
+       repetitions: 100,
+     }
+
+     alt_timeline=[]
+
+     alt_timeline.push({
+       type: 'fullscreen',
+       fullscreen_mode: true
+     })
+    alt_timeline.push(lth_instructions_block,fixation_block,lth_test_procedure,debrief_block)
+    alt_timeline.push(iso_instructions_block,fixation_block,iso_test_procedure,iso_debrief_block)
+    alt_timeline.push(main_instructions_block,fixation_block,main_test_procedure)
+    jsPsych.init({
+      timeline:alt_timeline,
+      on_finish: function(){
+        jsPsych.data.get().localSave('csv','joshPilot1.csv'); //Save the data locally in a .csv file
+
+        jsPsych.data.displayData();}
+    })
+
+
+
+    </script>
+    </html>

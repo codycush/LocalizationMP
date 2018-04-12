@@ -1,0 +1,78 @@
+<! doctype html>
+<html>
+  <head>
+  <title> Luminance Threshold</title>
+  <script src = "../jspsych.js"></script>
+  <script src = "../plugins/jspsych-LTH_alternate.js"></script> <!--Include the script for the plugin-->
+  <script src = "../plugins/jspsych-html-keyboard-response.js"></script>
+  <script src = "../plugins/jspsych-fullscreen.js"></script>
+  <script src = "../plugins/jspsych-fixation.js"></script>
+  <script src = "../plugins/jspsych-mp-mask-staircase.js"></script>
+  <link href = "../css/jspsych.css" rel = "stylesheet"></link>
+  </head>
+  <body>
+  </body>
+  <script>
+  var firstQ="During which interval did you feel more confident in your ability to see the image's orientation?"
+  var secondQ="Which direction was the first image tilting?"
+  var thirdQ="Which direction was the second image tilting?"
+    var instructions_block = {
+      type: "html-keyboard-response",
+      stimulus: "<p>In this part of the experiment you will keep your eyes on fixation cross at the center of the screen.  Circles of varying brightness will appear to the left or right or at the top or bottom of the fixation cross.  Please indicate which direction a circle appeared with the appropriate arrow key (left, right, up, or down). Press enter to continue. </p>"
+    }
+    var fixation_block={
+      type:'fixation',
+      fixation_cross_color:"red",
+      trial_duration:1000,
+    }
+
+
+    var test_block = {
+      type: "mp-mask",
+      aperture_width: 600,
+      aperture_height: 600,
+      choices: jsPsych.ALL_KEYS,
+      dot_radius: 150,
+      trial_type:jsPsych.timelineVariable('trial_type'),
+}
+    var response1={
+      type:"html-keyboard-response",
+      stimulus: [firstQ],
+      choices: [49,50],
+      prompt:"1-First Interval 2-Second Interval",
+      response_ends_trial: true,
+
+
+    }
+   var response2={
+     type:"html-keyboard-response",
+     stimulus: [secondQ],
+     choices: [37,39],
+     prompt:"Left Arrow Key-Left Right Arrow Key-Right",
+     response_ends_trial: true,
+   }
+   var response3={
+     type:"html-keyboard-response",
+     stimulus: [thirdQ],
+     choices: [37,39],
+     prompt:"Left Arrow Key-Left Right Arrow Key-Right",
+     response_ends_trial: true,
+   }
+   var test_procedure={
+     timeline: [test_block,response1,response2,response3],
+     timeline_variables:[{trial_type:'1'},{trial_type:'2'}],
+     randomize_order: true,
+     repetitions: 3,
+   }
+
+    var main_timeline=[];
+    main_timeline.push(instructions_block,fixation_block,test_procedure)
+
+    jsPsych.init({
+      timeline: main_timeline,
+      show_progress_bar: false,
+      on_finish: function(){jsPsych.data.displayData();}
+
+    })
+    </script>
+    </html>
