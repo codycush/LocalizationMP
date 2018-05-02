@@ -180,7 +180,7 @@ plugin.trial=function(display_element,trial){
   //var lthVal=trial.lth_val/1.05; //'for no stiarcase'
   //var lthVal=trial.lth_val;
 
-
+var centerOffset=100;
   var staircaseType=trial.staircase_type;
   if(staircaseType==1||staircaseType==2){
     var lthVal=lthVal2;
@@ -222,9 +222,10 @@ plugin.trial=function(display_element,trial){
   var ifi = 16.7 //hardcoded interframe interval for 60 fps in ms to ensure same stim dur across systems
   var ticks=2; //frames to show stim for
 
-  var gratingAngles=[45,315];
+  var gratingAngles=[1,2];
   var spatFrequency=20; //spatial freq of grating
   var firstDraw=true; //first round of  drawing
+  var firstBack=true;
   //var percentChange=.5;
   var stimOrder=trialType;
   var stimType;
@@ -277,7 +278,11 @@ var response = {
   key: -1
 }
 var image;
-
+var firstStimOff;
+var secondStimOff;
+var stimOff;
+var isiOver=false;
+var frameRequestID;
 
 //startSequence();
 //drawFix();
@@ -291,27 +296,19 @@ startSequence();
 
 var initialization;
 function startSequence(){
+  drawBack();
   drawFix();
-  //requestAnimationFrame(countdown)
   initialization=performance.now()
   countdownID=window.setInterval(countdown,ifi);
-  //window.setTimeout(startStim,500)
 }
 
 function countdown(){
-  //requestAnimationFrame(countdown)
   var preTime=performance.now()
-//  console.log("counting down")
-//  console.log(preTime-initialization)
-//  console.log(preTime-initialization)
   if ((preTime-initialization)>500){
-//    console.log("countdown done")
     window.clearInterval(countdownID)
     stimPresent();
     }
 }
-
-
 
 function pick2Angles(){
       var angle1=gratingAngles[Math.floor(Math.random()*gratingAngles.length)]
@@ -319,8 +316,7 @@ function pick2Angles(){
 return {
   firstAngle:angle1,
   secondAngle:angle2,
-}
-
+  }
 }
 
 function drawFix() {
@@ -341,115 +337,94 @@ function drawFix() {
   ctx.stroke();
   ctx.closePath();
 }
-function drawM(gratingAngle){
+
+function drawBack() {
+  if ((stimOrder==1 & firstDraw==true)||(stimOrder==2 &firstDraw==false&firstBack==false)||(stimOrder==1 & firstBack==true)){
   ctx.clearRect(0,0,width,height)
-ctx.save();
-ctx.fillStyle=backgroundColor;
-ctx.fillRect(0,0,canvas.width,canvas.height)
-ctx.beginPath();
-ctx.arc(apertureWidth/2,apertureHeight/2,dotRadius,0,Math.PI*2)
-ctx.strokeStyle=backgroundColor;
-ctx.stroke();
-ctx.closePath();
-ctx.clip();
-if (gratingAngle==45){ctx.translate(apertureWidth/2,0)}else if(gratingAngle==315){ctx.translate(0,apertureHeight/2)}
-ctx.rotate(gratingAngle*Math.PI/180)
-//ctx.rotate(Math.PI/4)
-  for (i=0;i<20;i++){
-    ctx.beginPath();
-
-    ctx.lineWidth=spatFrequency;
-    ctx.strokeStyle="rgb("+Math.round(lthVal)+","+Math.round(lthVal)+","+Math.round(lthVal)+")";
-    currColor.color1=ctx.strokeStyle;
-    currColor.color2=backgroundColor;
-    ctx.moveTo(5+i*(spatFrequency*2),0);
-    ctx.lineTo(5+i*(spatFrequency*2),apertureHeight);
-    ctx.stroke();
-
-    //ctx.arc(apertureWidth/2,apertureHeight/2,25,0,Math.PI*2);
-    //ctx.fill();
+  ctx.fillStyle=backgroundColor;
+  ctx.fillRect(0,0,canvas.width,canvas.height)
+} else if ((stimOrder==2 & firstDraw==true)||(stimOrder==1&firstDraw==false&firstBack==false)||(stimOrder==2 &firstBack==true)){
+  ctx.clearRect(0,0,width,height)
+  ctx.fillStyle="rgb("+Math.round(redVal)+",0,0)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
 }
-ctx.restore();
-//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
+
+function drawM(gratingAngle){
+
+ctx.beginPath();
+switch (gratingAngle){
+  case 1: //left
+   ctx.arc(dot.x-centerOffset,dot.y,dotRadius,0,Math.PI*2);
+     console.log('selected case 1')
+   break;
+  case 2: // right
+     ctx.arc(dot.x+centerOffset,dot.y,dotRadius,0,Math.PI*2);
+       break;
+  case 3: //up
+     ctx.arc(dot.x,dot.y+centerOffset,dotRadius,0,Math.PI*2);
+     break;
+  case 4: //down
+     ctx.arc(dot.x,dot.y-centerOffset,dotRadius,0,Math.PI*2);
+     break;
+}
+     ctx.fillStyle='rgb('+lthVal+','+lthVal+','+lthVal+')';
+       //  ctx.strokeStyle=dotColor;
+     ctx.fill();
+     ctx.closePath();//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
 
 
 }//
+
+
 function drawP(gratingAngle){
-  ctx.clearRect(0,0,width,height)
-ctx.save();
-ctx.fillStyle=backgroundColor;
-ctx.fillRect(0,0,canvas.width,canvas.height)
-ctx.beginPath();
-ctx.arc(apertureWidth/2,apertureHeight/2,dotRadius,0,Math.PI*2)
-ctx.strokeStyle=backgroundColor;
-ctx.stroke();
-ctx.closePath();
-ctx.clip();
-if (gratingAngle==45){ctx.translate(apertureWidth/2,0)}else if(gratingAngle==315){ctx.translate(0,apertureHeight/2)}
-ctx.rotate(gratingAngle*Math.PI/180)
+
+//ctx.strokeStyle="rgb(0,"+Math.round(greenVal)+",0)";
+//ctx.rotate(Math.PI/4)
+ctx.beginPath()
+switch (gratingAngle){
+  case 1: //left
+   ctx.arc(dot.x-centerOffset,dot.y,dotRadius,0,Math.PI*2);
+   break;
+  case 2: // right
+     ctx.arc(dot.x+centerOffset,dot.y,dotRadius,0,Math.PI*2);
+       break;
+  case 3: //up
+     ctx.arc(dot.x,dot.y+centerOffset,dotRadius,0,Math.PI*2);
+     break;
+  case 4: //down
+     ctx.arc(dot.x,dot.y-centerOffset,dotRadius,0,Math.PI*2);
+     break;
+}
+     ctx.fillStyle="rgb(0,"+Math.round(greenVal)+",0)";
+       //  ctx.strokeStyle=dotColor;
+     ctx.fill();
+     ctx.closePath();//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
+
+
 currColor.color1="rgb("+Math.round(redVal)+",0,0)";
 currColor.color2="rgb(0,"+Math.round(greenVal)+",0)";
-//ctx.rotate(Math.PI/4)
-for (i=0;i<20;i++){
-  ctx.beginPath();
-
-
-  ctx.lineWidth=spatFrequency;
-  ctx.strokeStyle="rgb(0,"+Math.round(greenVal)+",0)";
-  ctx.moveTo(spatFrequency+5+i*(spatFrequency*2),0);
-  ctx.lineTo(spatFrequency+5+i*(spatFrequency*2),apertureHeight);
-  ctx.stroke();
-
-  //ctx.arc(apertureWidth/2,apertureHeight/2,25,0,Math.PI*2);
-  //ctx.fill();
-}
-  for (i=0;i<20;i++){
-    ctx.beginPath();
-
-    ctx.lineWidth=spatFrequency;
-    ctx.strokeStyle="rgb("+Math.round(redVal)+",0,0)";
-
-    ctx.moveTo(5+i*(spatFrequency*2),0);
-    ctx.lineTo(5+i*(spatFrequency*2),apertureHeight);
-
-    ctx.stroke();
-
-    //ctx.arc(apertureWidth/2,apertureHeight/2,25,0,Math.PI*2);
-    //ctx.fill();
-}
-
-
-
-ctx.restore()
-//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circles
 }//
+//bit of code to find x,y coords within viewing area we wish to swap pixs on
+var squareX=[]
+var squareY=[];
+
+for (x=0; x<apertureWidth; x++){
+  for (y=0;y<apertureHeight;y++){
+
+      squareX.push(x)
+      squareY.push(y)
 
 
-//bit of code to find x,y coords within viewing circle
-var circleX=[]
-var circleY=[];
-
-for (x=0; x<(dotRadius*2); x++){
-  for (y=0;y<(dotRadius*2);y++){
-    var dx=x-dotRadius;
-    var dy=y-dotRadius;
-    var distanceSquared=dx*dx+dy*dy;
-    if (distanceSquared <= (dotRadius*dotRadius)){
-      circleX.push(x)
-      circleY.push(y)
-
-    }
     }
 
   }
   //console.log(circleX.length,circleY.length)
 //
 
-var firstStimOff;
-var secondStimOff;
-var stimOff;
-var isiOver=false;
-var frameRequestID;
+
+
+
 function stimPresent(){
   var previousTimeStamp;
   var startime=performance.now();
@@ -464,19 +439,15 @@ function stimPresent(){
       firstFrame=false;
       anglePair=pick2Angles();
         }
-        else{
-
-
-
-          if (firstDraw){//stimorder 1 =M-P, 2=P-
-          //  console.log("starting first draw")
+      else{
+        if(firstDraw){//stimorder 1 =M-P, 2=P-
             if( (!timerHasStarted) && (trial.trial_duration > 0)){
               timeoutID=window.setTimeout(end_trial,trialDur);
               timerHasStarted = true;
             }
             var timestamp=performance.now()
             var runtime = timestamp-startime
-if (runtime>0){
+            if (runtime>0){
                   //removeStim();
                 if (stimOrder==1){
                   drawM(anglePair.firstAngle)
@@ -491,28 +462,21 @@ if (runtime>0){
                 removeStim();
                 window.cancelAnimationFrame(frameRequestID)
                 firstDraw=false;
-
-                //window.requestAnimationFrame(removeStim)
-              //  window.cancelAnimationFrame(frameRequestID)
-
-                //  firstDraw=false;
-                //  console.log("firstdraw done")
-                  runtime=[]
+                runtime=[]
            }
             var currentTimeStamp = performance.now();
         //    frameRate.push(currentTimeStamp-previousTimeStamp);
             previousTimestamp = currentTimeStamp
-        }  else if (firstDraw==false && stimDone==false){
+        } else if (firstDraw==false && stimDone==false){
 
-            //var isi_timestamp=performance.now()
-          // var isi_runtime=isi_timestamp-startime
-            /*
-            if (isi_runtime>1000){
-              isiOver=true;//interstim interval over
-            } */
             var timestamp=performance.now()
             var runtime=timestamp-startime
               //if (isi_runtime>isiDur){
+              if (runtime>(isiDur/2)){//swap background halfway through isidur
+                firstBack=false;
+                drawBack();
+                drawFix();
+              }
                 if(runtime>(isiDur)){
                 if (stimOrder==1){
                   drawP(anglePair.secondAngle)
@@ -522,9 +486,6 @@ if (runtime>0){
                   stimType="M";
                 }
               }
-
-            //  var timestamp2=performance.now()
-              //var runtime2=timestamp2-startime+isi_time
 
             if ((runtime-isiDur)>0){
                 window.cancelAnimationFrame(frameRequestID)
@@ -585,13 +546,15 @@ Array.prototype.unique = function() {
 
 function createMask(){
   var coordIdx=[]
-  var maskImg=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius*2,dotRadius*2)//pull pixels for square with radius of view circle
-  for (z=0;z<circleX.length;z++){
+  coordIdx=squareX;
+  var maskImg=ctx.getImageData(0,0,apertureWidth,apertureHeight)//pull pixels for square with radius of view circle
+  /*for (z=0;z<squareX.length;z++){
   coordIdx.push(z)
-  }
+}*/
+  console.log(coordIdx.length)
   var shuffCoord=shuffle(coordIdx)
 
-console.log(coordIdx.length)
+
 /*  if ((stimOrder==1 && firstDraw==true) || (stimOrder==2 && firstDraw==false)){
   var coordPicks=shuffCoord.slice(0,(magnoChange*shuffCoord.length))
 } else if ((stimOrder==1 && firstDraw==false) || (stimOrder==2 && firstDraw==true)){
@@ -608,10 +571,9 @@ if (stimType=="M"){
   for (x=0;x<coordPicks.length;x++){
   //  for (y=0;y<coordPicks.length;y++){
       var idx=coordPicks[x]
-      var xcoord=circleX[idx]
-      var ycoord=circleY[idx]
-  var colorIndices = getColorIndicesForCoord(xcoord, ycoord, dotRadius*2);
-
+      var xcoord=squareX[idx]
+      var ycoord=squareY[idx]
+  var colorIndices = getColorIndicesForCoord(xcoord, ycoord, apertureWidth);
   var redIndex = colorIndices[0];
   var greenIndex = colorIndices[1];
   var blueIndex = colorIndices[2];
@@ -713,23 +675,25 @@ var maskStart
 
 function removeStim(){
   console.log('removing stim')
-  mask=createMask();
-  ctx.clearRect(0,0,apertureWidth,apertureHeight)
+//  mask=createMask();
+//  ctx.clearRect(0,0,apertureWidth,apertureHeight)
 
 
   maskStart=performance.now()
   window.requestAnimationFrame(showMask)
   function showMask(){
+    console.log('showing mask')
     maskID=window.requestAnimationFrame(showMask)
     //ctx.fillRect(0,0,apertureWidth,apertureHeight)
-    ctx.putImageData(mask,apertureWidth/2-dotRadius,apertureHeight/2-dotRadius)
+  //  ctx.putImageData(mask,apertureWidth,apertureHeight)
     var maskDur=performance.now()
     if ((maskDur-maskStart)>(ticks*ifi-ifi*.5)){
   //  if((maskDur-maskStart)>1000){
       window.cancelAnimationFrame(maskID)
 
-      ctx.clearRect(0,0,apertureWidth,apertureHeight)
+      ctx.clearRect(0,0,apertureWidth,apertureHeight);
 
+      drawBack();
       drawFix();
   }
   }
@@ -738,53 +702,6 @@ function removeStim(){
   if(stimDone==false){stimPresent()}
 
 }
-
-function checkerMask() {
-  maskID=window.requestAnimationFrame(checkerMask)
-    var w = width;
-    var h = height;
-
-  var   nRow =  spatFrequency;    // default number of rows
-    var nCol = spatFrequency;    // default number of columns
-
-    w /= nCol;            // width of a block
-    h /= nRow;
-
-    ctx.save();
-    ctx.fillStyle=backgroundColor;
-    ctx.fillRect(0,0,canvas.width,canvas.height)
-    ctx.beginPath();
-    ctx.arc(apertureWidth/2,apertureHeight/2,dotRadius,0,Math.PI*2)
-    ctx.strokeStyle=backgroundColor;
-    ctx.stroke();
-    ctx.closePath();
-    ctx.clip();
-
-              // height of a block
-    ctx.fillStyle=currColor.color1
-    for (var i = 0; i < nRow; ++i) {
-        for (var j = 0, col = nCol / 2; j < col; ++j) {
-            ctx.fillRect(2 * j * w + (i % 2 ? 0 : w), i * h, w, h);
-        }
-    }
-    //ctx.fill()
-    ctx.fillStyle=currColor.color2
-  //  ctx.translate(w,0)
-    for (var i = 0; i < nRow; ++i) {
-        for (var j = 0, col = nCol / 2; j < col; ++j) {
-            ctx.fillRect((2 * j * w + (i % 2 ? 0 : w))+w, i * h, w, h);
-        }
-    }
-    ctx.restore()
-    var maskDur=performance.now()
-    if ((maskDur-maskStart)>(ticks*ifi-ifi*.5)){
-      window.cancelAnimationFrame(maskID)
-      ctx.clearRect(0,0,apertureWidth,apertureHeight)
-
-      drawFix();
-    }
-}
-
 
 function end_trial() {
   stopDotMotion = true;
