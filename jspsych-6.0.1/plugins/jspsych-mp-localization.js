@@ -220,7 +220,7 @@ var centerOffset=100;
 
 
   var ifi = 16.7 //hardcoded interframe interval for 60 fps in ms to ensure same stim dur across systems
-  var ticks=2; //frames to show stim for
+  var ticks=30; //frames to show stim for
 
   var gratingAngles=[1,2];
   var spatFrequency=20; //spatial freq of grating
@@ -546,115 +546,131 @@ Array.prototype.unique = function() {
 
 function createMask(){
   var coordIdx=[]
-  coordIdx=squareX;
+
   var maskImg=ctx.getImageData(0,0,apertureWidth,apertureHeight)//pull pixels for square with radius of view circle
-  /*for (z=0;z<squareX.length;z++){
-  coordIdx.push(z)
-}*/
+  for (z=0;z<squareX.length;z++){
+    coordIdx.push(z)
+  }
   console.log(coordIdx.length)
   var shuffCoord=shuffle(coordIdx)
-
-
-/*  if ((stimOrder==1 && firstDraw==true) || (stimOrder==2 && firstDraw==false)){
-  var coordPicks=shuffCoord.slice(0,(magnoChange*shuffCoord.length))
-} else if ((stimOrder==1 && firstDraw==false) || (stimOrder==2 && firstDraw==true)){
-  var coordPicks=shuffCoord.slice(0,(parvoChange*shuffCoord.length))
-}*/
-if (stimType=="M"){
-  var coordPicks=shuffCoord.slice(0,(mNoisePercent*shuffCoord.length))
-} else if (stimType=="P"){
-  var coordPicks=shuffCoord.slice(0,(pNoisePercent*shuffCoord.length))
-}
-//var coordPicks=shuffCoord.slice(0,(noisePercent*shuffCoord.length))
+  if (stimType=="M"){
+    var coordPicks=shuffCoord.slice(0,(mNoisePercent*shuffCoord.length))
+    console.log(mNoisePercent)
+  } else if (stimType=="P"){
+    var coordPicks=shuffCoord.slice(0,(pNoisePercent*shuffCoord.length))
+    console.log(pNoisePercent)
+  }
+  //var coordPicks=shuffCoord.slice(0,(noisePercent*shuffCoord.length))
 
   var values=[];
   for (x=0;x<coordPicks.length;x++){
-  //  for (y=0;y<coordPicks.length;y++){
-      var idx=coordPicks[x]
-      var xcoord=squareX[idx]
-      var ycoord=squareY[idx]
-  var colorIndices = getColorIndicesForCoord(xcoord, ycoord, apertureWidth);
-  var redIndex = colorIndices[0];
-  var greenIndex = colorIndices[1];
-  var blueIndex = colorIndices[2];
-  var alphaIndex = colorIndices[3];
-  var redForCoord = maskImg.data[redIndex];
-  var greenForCoord = maskImg.data[greenIndex];
-  var blueForCoord = maskImg.data[blueIndex];
-  var alphaForCoord = maskImg.data[alphaIndex];
-  var colorTrio=[redForCoord,greenForCoord,blueForCoord]
-  var coinFlip=randomNumberBetween(1,2);
-  if (coinFlip==2){
-  if (redForCoord==Math.round(redVal)){
+    //  for (y=0;y<coordPicks.length;y++){
+    var idx=coordPicks[x]
+    var xcoord=squareX[idx]
+    var ycoord=squareY[idx]
+    var colorIndices = getColorIndicesForCoord(xcoord, ycoord, apertureWidth);
+    var redIndex = colorIndices[0];
+    var greenIndex = colorIndices[1];
+    var blueIndex = colorIndices[2];
+    var alphaIndex = colorIndices[3];
+    var redForCoord = maskImg.data[redIndex];
+    var greenForCoord = maskImg.data[greenIndex];
+    var blueForCoord = maskImg.data[blueIndex];
+    var alphaForCoord = maskImg.data[alphaIndex];
+    var colorTrio=[redForCoord,greenForCoord,blueForCoord]
+    var coinFlip=randomNumberBetween(1,2);
+    if (coinFlip==2){
+      if (redForCoord==Math.round(redVal)){
+        maskImg.data[redIndex]=0;
+        maskImg.data[greenIndex]=Math.round(greenVal);
+        maskImg.data[blueIndex]=0;
+      }  else if (greenForCoord==Math.round(greenVal)){
+        maskImg.data[redIndex]=Math.round(redVal);
+        maskImg.data[greenIndex]=0;
+        maskImg.data[blueIndex]=0;
+      }
+      /*if(redForCoord==0 && greenForCoord==0 && blueForCoord==0){
+      var flip=randomNumberBetween(1,2)
+      if (flip==1){
+      maskImg.data[redIndex]=redVal;
+      maskImg.data[greenIndex]=0;
+      maskImg.data[blueIndex]=0
+    }else{
     maskImg.data[redIndex]=0;
     maskImg.data[greenIndex]=greenVal;
     maskImg.data[blueIndex]=0;
-  }  else if (greenForCoord==Math.round(greenVal)){
-    maskImg.data[redIndex]=redVal;
-    maskImg.data[greenIndex]=0;
-    maskImg.data[blueIndex]=0;
   }
-/*if(redForCoord==0 && greenForCoord==0 && blueForCoord==0){
-    var flip=randomNumberBetween(1,2)
-    if (flip==1){
-    maskImg.data[redIndex]=redVal;
-  maskImg.data[greenIndex]=0;
-  maskImg.data[blueIndex]=0
-}else{
-  maskImg.data[redIndex]=0;
-  maskImg.data[greenIndex]=greenVal;
-  maskImg.data[blueIndex]=0;
-}
 }*/
-  if(stimType=="P" && maskImg.data[redIndex]!=Math.round(redVal) && maskImg.data[greenIndex]!=Math.round(greenVal)){
-    var flip=randomNumberBetween(1,2)
-    if (flip==1){
-    maskImg.data[redIndex]=redVal;
-  maskImg.data[greenIndex]=0;
-  maskImg.data[blueIndex]=0
-  }else{
-  maskImg.data[redIndex]=0;
-  maskImg.data[greenIndex]=greenVal;
-  maskImg.data[blueIndex]=0;
-  }
-  }
-  if (blueForCoord==Math.round(lthVal)){
-    if (stimType=="M"){
+
+
+
+if (blueForCoord==Math.round(lthVal)){
+  if (stimType=="M"){
     maskImg.data[redIndex]=127;
     maskImg.data[greenIndex]=127;
     maskImg.data[blueIndex]=127;
   }else{
     var flip=randomNumberBetween(1,2)
     if (flip==1){
-    maskImg.data[redIndex]=redVal;
-  maskImg.data[greenIndex]=0;
-  maskImg.data[blueIndex]=0
-}else{
-  maskImg.data[redIndex]=0;
-  maskImg.data[greenIndex]=greenVal;
-  maskImg.data[blueIndex]=0;
-}
+      maskImg.data[redIndex]=redVal;
+      maskImg.data[greenIndex]=0;
+      maskImg.data[blueIndex]=0
+    }else{
+      maskImg.data[redIndex]=0;
+      maskImg.data[greenIndex]=greenVal;
+      maskImg.data[blueIndex]=0;
+    }
 
   }
-  }else if (blueForCoord==127){
-    if (stimType=="M"){
+}else if (blueForCoord==127){
+  if (stimType=="M"){
     maskImg.data[redIndex]=lthVal;
     maskImg.data[greenIndex]=lthVal;
     maskImg.data[blueIndex]=lthVal;
   }else{
     var flip=randomNumberBetween(1,2)
     if (flip==1){
-    maskImg.data[redIndex]=redVal;
-  maskImg.data[greenIndex]=0;
-  maskImg.data[blueIndex]=0
-}else{
-  maskImg.data[redIndex]=0;
-  maskImg.data[greenIndex]=greenVal;
-  maskImg.data[blueIndex]=0;
-}
+      maskImg.data[redIndex]=redVal;
+      maskImg.data[greenIndex]=0;
+      maskImg.data[blueIndex]=0
+    }else{
+      maskImg.data[redIndex]=0;
+      maskImg.data[greenIndex]=greenVal;
+      maskImg.data[blueIndex]=0;
+      }
 
   }
-  }
+}
+
+
+//Controlling for edges (which tend to be rendered with shaded color values and thus not picked up in the swap)
+if(stimType=="P" && maskImg.data[redIndex]!=Math.round(redVal) && maskImg.data[greenIndex]!=Math.round(greenVal)){
+var flip=randomNumberBetween(1,2)
+if (flip==1){
+maskImg.data[redIndex]=redVal;
+maskImg.data[greenIndex]=0;
+maskImg.data[blueIndex]=0
+}else{
+maskImg.data[redIndex]=0;
+maskImg.data[greenIndex]=greenVal;
+maskImg.data[blueIndex]=0;
+}
+}
+
+if(stimType=="M" && maskImg.data[blueIndex]!=Math.round(lthVal)&& maskImg.data[blueIndex]!=127 ){
+var flip=randomNumberBetween(1,2)
+if (flip==1){
+maskImg.data[redIndex]=lthVal;
+maskImg.data[greenIndex]=lthVal;
+maskImg.data[blueIndex]=lthVal;
+}else{
+maskImg.data[redIndex]=127;
+maskImg.data[greenIndex]=127;
+maskImg.data[blueIndex]=127;
+}
+}
+////////////////////////////////////////
+
 } //if coinflip
 //}//fory
 }//forx
@@ -675,8 +691,8 @@ var maskStart
 
 function removeStim(){
   console.log('removing stim')
-//  mask=createMask();
-//  ctx.clearRect(0,0,apertureWidth,apertureHeight)
+    mask=createMask();
+//ctx.clearRect(0,0,apertureWidth,apertureHeight)
 
 
   maskStart=performance.now()
@@ -685,7 +701,7 @@ function removeStim(){
     console.log('showing mask')
     maskID=window.requestAnimationFrame(showMask)
     //ctx.fillRect(0,0,apertureWidth,apertureHeight)
-  //  ctx.putImageData(mask,apertureWidth,apertureHeight)
+    ctx.putImageData(mask,0,0)
     var maskDur=performance.now()
     if ((maskDur-maskStart)>(ticks*ifi-ifi*.5)){
   //  if((maskDur-maskStart)>1000){
