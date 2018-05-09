@@ -171,16 +171,20 @@ plugin.info = {
 }//parameters
 }//info
 plugin.trial=function(display_element,trial){
-  var dotRadius=trial.dot_radius;
-  var apertureWidth = trial.aperture_width;
-  var apertureHeight = trial.aperture_height
+  //var dotRadius=trial.dot_radius;
+  var dotRadius=Math.round(2/deg_per_px); //2 degree stimulus
+  //var apertureWidth = trial.aperture_width;
+  //var apertureHeight = trial.aperture_height
+  var apertureWidth=Math.round(20/deg_per_px);//20 degrees x 20 degrees aperture
+  var apertureHeight=Math.round(20/deg_per_px);
   var apertureCenterX=trial.aperture_center_x;
   var apertureCenterY=trial.aperture_center_y;
   var backgroundColor = trial.background_color;
   //var lthVal=trial.lth_val/1.05; //'for no stiarcase'
   //var lthVal=trial.lth_val;
 
-var centerOffset=100;
+//var centerOffset=100
+  var centerOffset= 5/deg_per_px; //five degrees of visual angle
   var staircaseType=trial.staircase_type;
   if(staircaseType==1||staircaseType==2){
     var lthVal=lthVal2;
@@ -220,9 +224,9 @@ var centerOffset=100;
 
 
   var ifi = 16.7 //hardcoded interframe interval for 60 fps in ms to ensure same stim dur across systems
-  var ticks=30; //frames to show stim for
+  var ticks=2; //frames to show stim for
 
-  var gratingAngles=[1,2];
+  var gratingAngles=[1,2]; //too lazy to change variable name from discrimination exp, angle 1=left target 2=right target
   var spatFrequency=20; //spatial freq of grating
   var firstDraw=true; //first round of  drawing
   var firstBack=true;
@@ -245,7 +249,8 @@ var centerOffset=100;
 
   var width = canvas.width = apertureWidth;
   var height = canvas.height = apertureHeight;
-
+//var width=canvas.width=window.innerWidth;
+//var height=canvas.height=window.innerHeight;
   canvas.style.backgroundcolor = backgroundColor;
 
   var horizontalAxis;
@@ -361,12 +366,13 @@ switch (gratingAngle){
   case 2: // right
      ctx.arc(dot.x+centerOffset,dot.y,dotRadius,0,Math.PI*2);
        break;
+  /* sticking with 2AFC but in case that ever changes
   case 3: //up
      ctx.arc(dot.x,dot.y+centerOffset,dotRadius,0,Math.PI*2);
      break;
   case 4: //down
      ctx.arc(dot.x,dot.y-centerOffset,dotRadius,0,Math.PI*2);
-     break;
+     break;*/
 }
      ctx.fillStyle='rgb('+lthVal+','+lthVal+','+lthVal+')';
        //  ctx.strokeStyle=dotColor;
@@ -389,12 +395,13 @@ switch (gratingAngle){
   case 2: // right
      ctx.arc(dot.x+centerOffset,dot.y,dotRadius,0,Math.PI*2);
        break;
+  /* sticking with 2AFC but in case that ever changes
   case 3: //up
      ctx.arc(dot.x,dot.y+centerOffset,dotRadius,0,Math.PI*2);
      break;
   case 4: //down
      ctx.arc(dot.x,dot.y-centerOffset,dotRadius,0,Math.PI*2);
-     break;
+     break;*/
 }
      ctx.fillStyle="rgb(0,"+Math.round(greenVal)+",0)";
        //  ctx.strokeStyle=dotColor;
