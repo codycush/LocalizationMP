@@ -194,6 +194,7 @@ plugin.trial=function(display_element,trial){
     var mNoisePercent=noiseLevel3;
   }
   console.log(lthVal);
+
   var redVal=trial.red_val;
   var greenVal=trial.green_val;
   var trialType=parseInt(trial.trial_type);
@@ -231,7 +232,26 @@ plugin.trial=function(display_element,trial){
   var firstDraw=true; //first round of  drawing
   var firstBack=true;
   //var percentChange=.5;
-  var stimOrder=trialType;
+
+  if (trialType==2|trialType==4){
+    var lthDiff=127-lthVal;
+    lthVal=127+lthDiff;
+  }
+  if (trialType<3){
+    var stimOrder=1;
+    var currColor ={
+      color1: "rgb("+Math.round(redVal)+",0,0)",
+      color2: "rgb(0,"+Math.round(greenVal)+",0)",
+
+    }
+  }else{
+    stimOrder=2
+    var currColor ={
+      color1: "rgb(0,"+Math.round(greenVal)+",0)",
+      color2: "rgb("+Math.round(redVal)+",0,0)",
+
+    }
+    }
   var stimType;
 
   var canvas = document.createElement("canvas");
@@ -241,6 +261,7 @@ plugin.trial=function(display_element,trial){
   body.style.margin = 0;
   body.style.padding = 0;
   body.style.backgroundColor = backgroundColor;
+  console.log(window.outerHeight)
 
   canvas.style.margin = 0;
   canvas.style.padding = 0;
@@ -255,11 +276,7 @@ plugin.trial=function(display_element,trial){
 
   var horizontalAxis;
   var verticalAxis;
-  var currColor ={
-    color1: '',
-    color2: '',
 
-  }
 
   var frameRate=[];
 
@@ -350,7 +367,7 @@ function drawBack() {
   ctx.fillRect(0,0,canvas.width,canvas.height)
 } else if ((stimOrder==2 & firstDraw==true)||(stimOrder==1&firstDraw==false&firstBack==false)||(stimOrder==2 &firstBack==true)){
   ctx.clearRect(0,0,width,height)
-  ctx.fillStyle="rgb("+Math.round(redVal)+",0,0)";
+  ctx.fillStyle=currColor.color1;
   ctx.fillRect(0,0,canvas.width,canvas.height);
   }
 }
@@ -403,14 +420,13 @@ switch (gratingAngle){
      ctx.arc(dot.x,dot.y-centerOffset,dotRadius,0,Math.PI*2);
      break;*/
 }
-     ctx.fillStyle="rgb(0,"+Math.round(greenVal)+",0)";
+     ctx.fillStyle=currColor.color2;
        //  ctx.strokeStyle=dotColor;
      ctx.fill();
      ctx.closePath();//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
 
 
-currColor.color1="rgb("+Math.round(redVal)+",0,0)";
-currColor.color2="rgb(0,"+Math.round(greenVal)+",0)";
+
 }//
 //bit of code to find x,y coords within viewing area we wish to swap pixs on
 var squareX=[]
