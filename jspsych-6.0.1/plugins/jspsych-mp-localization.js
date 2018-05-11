@@ -177,6 +177,8 @@ plugin.trial=function(display_element,trial){
   //var apertureHeight = trial.aperture_height
   var apertureWidth=Math.round(20/deg_per_px);//20 degrees x 20 degrees aperture
   var apertureHeight=Math.round(20/deg_per_px);
+
+
   var apertureCenterX=trial.aperture_center_x;
   var apertureCenterY=trial.aperture_center_y;
   var backgroundColor = trial.background_color;
@@ -258,13 +260,15 @@ plugin.trial=function(display_element,trial){
   display_element.append(canvas);
 
   var body = document.getElementsByClassName("jspsych-display-element")[0];
-  body.style.margin = 0;
-  body.style.padding = 0;
-  body.style.backgroundColor = backgroundColor;
+  document.body.style.margin = 0;
+  document.body.style.padding = 0;
+  document.body.style.backgroundColor = backgroundColor;
   console.log(window.outerHeight)
 
   canvas.style.margin = 0;
   canvas.style.padding = 0;
+
+
 
   var ctx = canvas.getContext("2d");
 
