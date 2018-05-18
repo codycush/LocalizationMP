@@ -61,7 +61,7 @@ plugin.info = {
   background_color:{
     type:jsPsych.plugins.parameterType.STRING,
     pretty_name: "Background Color",
-    default: "rgb(127,127,127)",
+    default: "rgb(255,255,255)",
     description:''
   },
   lth_val:{
@@ -116,6 +116,7 @@ plugin.info = {
     type:jsPsych.plugins.parameterType.FLOAT,
     pretty_name: 'trial duration',
     default:2068,
+    //default:10000,
     description:''
 
   },
@@ -175,9 +176,10 @@ plugin.trial=function(display_element,trial){
   var dotRadius=Math.round(2/deg_per_px); //2 degree stimulus
   //var apertureWidth = trial.aperture_width;
   //var apertureHeight = trial.aperture_height
-  var apertureWidth=Math.round(20/deg_per_px);//20 degrees x 20 degrees aperture
-  var apertureHeight=Math.round(20/deg_per_px);
-
+var apertureWidth=Math.round(20/deg_per_px);//20 degrees x 20 degrees aperture
+var apertureHeight=Math.round(20/deg_per_px);
+//var apertureWidth=window.innerWidth;
+//var apertureHeight=window.innerHeight;
 
   var apertureCenterX=trial.aperture_center_x;
   var apertureCenterY=trial.aperture_center_y;
@@ -225,6 +227,7 @@ plugin.trial=function(display_element,trial){
   var pConsecutiveCorrect=trial.p_consecutive_correct;
   var pConsecutiveIncorrect=trial.p_consecutive_incorrect;
 
+  var mBackColor='rgb(127,127,127)'
 
   var ifi = 16.7 //hardcoded interframe interval for 60 fps in ms to ensure same stim dur across systems
   var ticks=2; //frames to show stim for
@@ -260,14 +263,15 @@ plugin.trial=function(display_element,trial){
   display_element.append(canvas);
 
   var body = document.getElementsByClassName("jspsych-display-element")[0];
-  document.body.style.margin = 0;
-  document.body.style.padding = 0;
+  body.style.margin = 0;
+  body.style.padding = 0;
   document.body.style.backgroundColor = backgroundColor;
   console.log(window.outerHeight)
 
   canvas.style.margin = 0;
   canvas.style.padding = 0;
-
+  var body2 = document.getElementsByClassName("jspsych-content")[0];
+  body2.maxWidth='100%';
 
 
   var ctx = canvas.getContext("2d");
@@ -276,7 +280,7 @@ plugin.trial=function(display_element,trial){
   var height = canvas.height = apertureHeight;
 //var width=canvas.width=window.innerWidth;
 //var height=canvas.height=window.innerHeight;
-  canvas.style.backgroundcolor = backgroundColor;
+//  canvas.style.backgroundcolor = backgroundColor;
 
   var horizontalAxis;
   var verticalAxis;
@@ -367,13 +371,17 @@ function drawFix() {
 function drawBack() {
   if ((stimOrder==1 & firstDraw==true)||(stimOrder==2 &firstDraw==false&firstBack==false)||(stimOrder==1 & firstBack==true)){
   ctx.clearRect(0,0,width,height)
-  ctx.fillStyle=backgroundColor;
+  ctx.fillStyle=mBackColor
+  document.body.style.backgroundColor = mBackColor;
+
   ctx.fillRect(0,0,canvas.width,canvas.height)
 } else if ((stimOrder==2 & firstDraw==true)||(stimOrder==1&firstDraw==false&firstBack==false)||(stimOrder==2 &firstBack==true)){
   ctx.clearRect(0,0,width,height)
   ctx.fillStyle=currColor.color1;
+  document.body.style.backgroundColor = currColor.color1;
   ctx.fillRect(0,0,canvas.width,canvas.height);
   }
+  //jsPsych.pauseExperiment();
 }
 
 function drawM(gratingAngle){
