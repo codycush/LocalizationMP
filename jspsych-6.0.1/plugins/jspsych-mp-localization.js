@@ -199,7 +199,7 @@ var apertureHeight=Math.round(20/deg_per_px);
   }
   console.log(lthVal);
 
-  var redVal=trial.red_val;
+  var redVal=trial_red_val;
   var greenVal=trial.green_val;
   var trialType=parseInt(trial.trial_type);
   var trialDur=trial.trial_duration;
