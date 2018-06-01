@@ -116,12 +116,13 @@ var deg_per_px; //global for calculated px per degree
         type:'fixation',
         fixation_cross_color:"red",
         trial_duration:1000,
+        background_color: 'rgb(255,255,255)',
       }
       var consecutive_correct=0;
       var consecutive_incorrect=0;
       var bgval = 127;
-      var redVal;
-      var greenVal;
+      var redValue;
+      var greenValue;
       var trial_types=['1','2','3','4']
 
       var mCorrect=false;
@@ -153,8 +154,8 @@ var deg_per_px; //global for calculated px per degree
         upper_intensity_limit: 40,
         lower_intensity_limit: 0.0000001,
         starting_step_size: 1,
-        min_step_size: .001,
-        max_step_size: 2,
+        min_step_size: 1,
+        max_step_size: 10,
       }
 
       var noisePestParams_1u2d={
@@ -175,8 +176,8 @@ var deg_per_px; //global for calculated px per degree
         upper_intensity_limit: 40,
         lower_intensity_limit: 0.0000001,
         starting_step_size: 1,
-        min_step_size: .001,
-        max_step_size: 2,
+        min_step_size: 1,
+        max_step_size: 10,
       }
 
 
@@ -239,6 +240,7 @@ var deg_per_px; //global for calculated px per degree
         choices: jsPsych.ALL_KEYS,
         aperture_height:400,
         aperture_width:400,
+        background_color:'rgb(255,255,255)',
         dot_radius: 100
             }
       var iso_test_procedure={
@@ -262,8 +264,8 @@ var deg_per_px; //global for calculated px per degree
                 jsPsych.data.get().addToLast({redValmean:mean})
                 jsPsych.data.get().addToLast({redValmedian:median})
 
-                var redVal=jsPsych.data.get().select('redVal').mean();
-                var greenVal=jsPsych.data.get().select('greenVal').mean();
+                redValue=Math.round(jsPsych.data.get().select('redVal').mean());
+                greenValue=Math.round(jsPsych.data.get().select('greenVal').mean());
 
                 //return "<p> Avg Red Value: "+mean+" Median Red Value: " + median+" STD:"+std+"</p>"
                 return "<p> The main experiment will begin shortly."
@@ -293,7 +295,7 @@ var deg_per_px; //global for calculated px per degree
             type: "instructions",
             pages: ["<p>In this part of the experiment you will focus on a fixation cross in the center of your screen.</p>"+
             "<p>You will consecutively be presented with 2 target dots (circles) across two intervals.</p>",
-            "<p>Interval transitions are marked by a color change in the square background (either to or from the same gray as the surrounding screen) in which target dots are presented. </p>"+
+            "<p>Interval transitions are marked by a color change in the background. </p>"+
             "<p>The fixation cross will turn blue at the end of the second interval.</p>"+
             "<div style='float: center;'><img src='jspsych-6.0.1/stimuli/trial_simple.gif'></img>",
             "<p>After you will be asked which target dot's location you more confidently saw: The target dot during the first interval" +
@@ -355,8 +357,8 @@ var deg_per_px; //global for calculated px per degree
       lth_val: lthVal2,
       magno_noise: noiseLevel2,
       parvo_noise: noiseLevel2,
-      red_val:redVal,
-      green_val:greenVal,
+      red_val:function(){return redValue},
+      green_val:function(){return greenValue},
     }
 
     var test_block_2 = {
@@ -369,14 +371,8 @@ var deg_per_px; //global for calculated px per degree
       lth_val: lthVal2,
       magno_noise: noiseLevel2,
       parvo_noise: noiseLevel3,
-      red_val: function(){
-        var redVal=jsPsych.data.get().select('redVal').mean();
-        return redVal
-      },
-      green_val: function(){
-        var greenVal=jsPsych.data.get().select('greenVal').mean();
-        return greenVal
-      },
+      red_val: function(){return redValue},
+      green_val: function(){return greenValue},
     }
     var test_block_3 = {
       type: "mp-mask-staircase",
@@ -388,14 +384,8 @@ var deg_per_px; //global for calculated px per degree
       lth_val: lthVal3,
       magno_noise: noiseLevel3,
       parvo_noise: noiseLevel3,
-      red_val: function(){
-        var redVal=jsPsych.data.get().select('redVal').mean();
-        return redVal
-      },
-      green_val: function(){
-        var greenVal=jsPsych.data.get().select('greenVal').mean();
-        return greenVal
-      },
+      red_val: function(){return redValue},
+      green_val: function(){return greenValue},
     }
     var test_block_4 = {
       type: "mp-mask-staircase",
@@ -407,14 +397,8 @@ var deg_per_px; //global for calculated px per degree
       lth_val:lthVal3,
       magno_noise:noiseLevel3,
       parvo_noise: noiseLevel2,
-      red_val: function(){
-        var redVal=jsPsych.data.get().select('redVal').mean();
-        return redVal
-      },
-      green_val: function(){
-        var greenVal=jsPsych.data.get().select('greenVal').mean();
-        return greenVal
-      },
+      red_val: function(){return redValue},
+      green_val: function(){return greenValue},
     }
 
 
@@ -551,25 +535,14 @@ var deg_per_px; //global for calculated px per degree
          }
          return newArray
        }
-       function insertMiddleBreak(trialArray){
+       function insertMiddleBreak(trialArray,break_block){
          midIdx=Math.floor(trialArray.length/2);
          trialArray.splice(midIdx,0,break_block)
          return trialArray
        }
 
-       var trialBones=[test_block_1,test_block_2,test_block_3,test_block_4]
-       var allTrialTypes=makeAllTrialTypes(trialBones)
-       var trialsArray=jsPsych.randomization.repeat(allTrialTypes,20)
-       var allTrials=interleavePostTrialBlocks(trialsArray);
-       var allTrials=insertMiddleBreak(allTrials);
 
 
-
-      var main_test_procedure={
-         timeline: allTrials,
-         //timeline_variables:[{trial_type:'1'},{trial_type:'2'},{trial_type:'3'},{trial_type:'4'}],//1/2 equal M-first 3/4 equal P-first
-
-       }
 
        var break_block={
          type: 'html-keyboard-response',
@@ -580,6 +553,22 @@ var deg_per_px; //global for calculated px per degree
 
 
        }
+
+       var trialBones=[test_block_1,test_block_2,test_block_3,test_block_4]
+       var allTrialTypes=makeAllTrialTypes(trialBones)
+       var trialsArray=jsPsych.randomization.repeat(allTrialTypes,5)
+       var allTrials=interleavePostTrialBlocks(trialsArray);
+       var allTrials=insertMiddleBreak(allTrials,break_block);
+
+
+
+      var main_test_procedure={
+         timeline: allTrials,
+         //timeline_variables:[{trial_type:'1'},{trial_type:'2'},{trial_type:'3'},{trial_type:'4'}],//1/2 equal M-first 3/4 equal P-first
+
+       }
+
+
        alt_timeline=[]
 
        alt_timeline.push({
@@ -591,7 +580,7 @@ var deg_per_px; //global for calculated px per degree
       jsPsych.init({
         timeline:alt_timeline,
         on_finish: function(){
-          jsPsych.data.get().localSave('csv','codyPilot.csv'); //Save the data locally in a .csv file
+          jsPsych.data.get().localSave('csv','localizationPilot.csv'); //Save the data locally in a .csv file
 
           jsPsych.data.displayData();}
       })

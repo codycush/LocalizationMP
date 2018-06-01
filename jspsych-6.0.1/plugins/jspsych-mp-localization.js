@@ -73,7 +73,7 @@ plugin.info = {
   red_val:{
     type:jsPsych.plugins.parameterType.FLOAT,
     pretty_name: 'red value',
-    default: 200,
+    default: 0,
     description:'',
   },
   green_val:{
@@ -200,7 +200,10 @@ var apertureHeight=Math.round(20/deg_per_px);
   console.log(lthVal);
 
   var redVal=trial.red_val;
-  var greenVal=trial.green_val;
+  var greenVal=trial.green_val
+//  var redVal=redValue;
+  //var greenVal=greenValue
+  console.log(redVal)
   var trialType=parseInt(trial.trial_type);
   var trialDur=trial.trial_duration;
   //fix cross stuff
@@ -757,6 +760,7 @@ function removeStim(){
 function end_trial() {
   stopDotMotion = true;
   numberOfFrames = frameRate.length;
+  document.body.style.backgroundColor=backgroundColor;
   var frameRateArray = frameRate;
   if(frameRate.length > 0){
     frameRate = frameRate.reduce((total,current) => total + current)/frameRate.length;
