@@ -406,9 +406,11 @@ switch (gratingAngle){
      ctx.arc(dot.x,dot.y-centerOffset,dotRadius,0,Math.PI*2);
      break;*/
 }
-     ctx.fillStyle='rgb('+lthVal+','+lthVal+','+lthVal+')';
-       //  ctx.strokeStyle=dotColor;
-     ctx.fill();
+     //ctx.fillStyle='rgb('+lthVal+','+lthVal+','+lthVal+')';
+         ctx.strokeStyle='rgb('+lthVal+','+lthVal+','+lthVal+')';
+    ctx.lineWidth=8;
+    ctx.stroke();
+     //ctx.fill();
      ctx.closePath();//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
 
 
@@ -435,9 +437,11 @@ switch (gratingAngle){
      ctx.arc(dot.x,dot.y-centerOffset,dotRadius,0,Math.PI*2);
      break;*/
 }
-     ctx.fillStyle=currColor.color2;
+    // ctx.fillStyle=currColor.color2;
+     ctx.strokeStyle=currColor.color2;
+     ctx.lineWidth=8;
        //  ctx.strokeStyle=dotColor;
-     ctx.fill();
+     ctx.stroke();
      ctx.closePath();//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
 
 
