@@ -408,7 +408,7 @@ switch (gratingAngle){
 }
      //ctx.fillStyle='rgb('+lthVal+','+lthVal+','+lthVal+')';
          ctx.strokeStyle='rgb('+lthVal+','+lthVal+','+lthVal+')';
-    ctx.lineWidth=8;
+  //  ctx.lineWidth=8;
     ctx.stroke();
      //ctx.fill();
      ctx.closePath();//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
@@ -439,7 +439,7 @@ switch (gratingAngle){
 }
     // ctx.fillStyle=currColor.color2;
      ctx.strokeStyle=currColor.color2;
-     ctx.lineWidth=8;
+  //   ctx.lineWidth=8;
        //  ctx.strokeStyle=dotColor;
      ctx.stroke();
      ctx.closePath();//image=ctx.getImageData(apertureWidth/2-dotRadius,apertureHeight/2-dotRadius,dotRadius,dotRadius)//pull pixels for square with radius of view circle
