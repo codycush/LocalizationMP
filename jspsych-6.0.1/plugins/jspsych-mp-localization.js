@@ -2,11 +2,11 @@
 Main task for MPMask project
 cody cushing 2/18/18
 */
-jsPsych.plugins["mp-mask-staircase"]=(function(){
+jsPsych.plugins['mp-localization']=(function(){
 var plugin = {};
 
 plugin.info = {
-  name: 'mp-mask-staircase',
+  name: 'mp-localization',
   description:'',
   parameters:{
     choices:{

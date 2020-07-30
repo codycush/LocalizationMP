@@ -330,7 +330,7 @@ var deg_per_px; //global for calculated px per degree
           func: function(){
             console.log('updating staircases')
             var last5trials=jsPsych.data.get().last(5)
-            var stimTrial=last5trials.filter({trial_type:'mp-mask-staircase'})
+            var stimTrial=last5trials.filter({trial_type:'mp-localization'})
             if (stimTrial.select('staircase_type').values==1 || stimTrial.select('staircase_type').values==2){
               lthVal2=(127-mPest_1u2d.staircase(mCorrect_1u2d));
               console.log('updated lthVal2')
@@ -348,7 +348,7 @@ var deg_per_px; //global for calculated px per degree
           }
         }
     var test_block_1 = {
-      type: "mp-mask-staircase",
+      type: "mp-localization",
       aperture_width: 600,
       aperture_height: 600,
       choices: jsPsych.ALL_KEYS,
@@ -362,7 +362,7 @@ var deg_per_px; //global for calculated px per degree
     }
 
     var test_block_2 = {
-      type: "mp-mask-staircase",
+      type: "mp-localization",
       aperture_width: 600,
       aperture_height: 600,
       choices: jsPsych.ALL_KEYS,
@@ -375,7 +375,7 @@ var deg_per_px; //global for calculated px per degree
       green_val: function(){return greenValue},
     }
     var test_block_3 = {
-      type: "mp-mask-staircase",
+      type: "mp-localization",
       aperture_width: 600,
       aperture_height: 600,
       choices: jsPsych.ALL_KEYS,
@@ -388,7 +388,7 @@ var deg_per_px; //global for calculated px per degree
       green_val: function(){return greenValue},
     }
     var test_block_4 = {
-      type: "mp-mask-staircase",
+      type: "mp-localization",
       aperture_width: 600,
       aperture_height: 600,
       choices: jsPsych.ALL_KEYS,
@@ -425,7 +425,7 @@ var deg_per_px; //global for calculated px per degree
          response_ends_trial: true,
          on_finish: function(){
            var last4trials=jsPsych.data.get().last(4)
-           var stimTrial=last4trials.filter({trial_type:'mp-mask-staircase'})
+           var stimTrial=last4trials.filter({trial_type:'mp-localization'})
            var firstResp=last4trials.filter({stimulus: firstQ})
            var secResp=last4trials.filter({stimulus: secondQ}).select('key_press').values
            var thirdResp=last4trials.filter({stimulus: thirdQ}).select('key_press').values
